@@ -308,7 +308,7 @@ end)
 local speedGrindToggle = Tabs.Rebirth:CreateToggle("SpeedGrind", {Title = "Fast Grind (No Rebirth)", Default = false})
 speedGrindToggle:OnChanged(function(State)
 	if State then
-		for i = 1, 20 do
+		for i = 1, 17 do
 			task.spawn(function()
 				while speedGrindToggle.Value do
 					game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
@@ -1126,6 +1126,9 @@ local LocalPlayersFolder = MiscTab:AddFolder("Local Players")
 -- Auto Eat Protein Egg Every 30 Minutes
 LocalPlayersFolder:AddSwitch("Auto Eat Protein Egg (30m)", function(state)
     getgenv().AutoEatProteinEgg = state
+    local LocalPlayer = game.Players.LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
     task.spawn(function()
         while getgenv().AutoEatProteinEgg and LocalPlayer and LocalPlayer.Character do
             local egg = LocalPlayer.Backpack:FindFirstChild("Protein Egg") or LocalPlayer.Character:FindFirstChild("Protein Egg")
@@ -1241,6 +1244,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
