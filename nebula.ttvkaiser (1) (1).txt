@@ -1120,6 +1120,24 @@ Tabs.Misc:CreateButton({
     end
 })
 
+local MiscTab = Window:AddTab("Misc")
+local LocalPlayersFolder = MiscTab:AddFolder("Local Players")
+
+-- Auto Eat Protein Egg Every 30 Minutes
+LocalPlayersFolder:AddSwitch("Auto Eat Protein Egg (30m)", function(state)
+    getgenv().AutoEatProteinEgg = state
+    task.spawn(function()
+        while getgenv().AutoEatProteinEgg and LocalPlayer and LocalPlayer.Character do
+            local egg = LocalPlayer.Backpack:FindFirstChild("Protein Egg") or LocalPlayer.Character:FindFirstChild("Protein Egg")
+            if egg then
+                egg.Parent = LocalPlayer.Character
+                ReplicatedStorage.muscleEvent:FireServer("rep")
+            end
+            task.wait(1800) -- 30 دقيقة
+        end
+    end)
+end)
+
 -- Anti AFK Button
 Tabs.Misc:CreateButton({
     Title = "Anti AFK",
@@ -1223,6 +1241,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
