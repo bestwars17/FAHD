@@ -312,7 +312,7 @@ speedGrindToggle:OnChanged(function(State)
 			task.spawn(function()
 				while speedGrindToggle.Value do
 					game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
-					task.wait(0.004)
+					task.wait(0.005)
 				end
 			end)
 		end
@@ -1244,6 +1244,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
