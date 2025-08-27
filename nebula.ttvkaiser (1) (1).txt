@@ -667,37 +667,18 @@ end)
 
 Tabs.Rocks:AddSection("Auto Punch Rocks")
 
-local selectrock = ""
-
-local function punchRock(requiredDurability, rockName)
-    getgenv().autoFarm = true
-    while getgenv().autoFarm and selectrock == rockName do
-        task.wait()
-        local player = game.Players.LocalPlayer
-        if player.Durability.Value >= requiredDurability then
-            for _, v in pairs(game.Workspace.machinesFolder:GetDescendants()) do
-                if v.Name == "neededDurability" and v.Value == requiredDurability and player.Character:FindFirstChild("LeftHand") and player.Character:FindFirstChild("RightHand") then
-                    firetouchinterest(v.Parent.Rock, player.Character.RightHand, 0)
-                    firetouchinterest(v.Parent.Rock, player.Character.RightHand, 1)
-                    firetouchinterest(v.Parent.Rock, player.Character.LeftHand, 0)
-                    firetouchinterest(v.Parent.Rock, player.Character.LeftHand, 1)
-                    gettool()
-                end
-            end
-        end
-    end
-end
--- تعريف المتغيرات العامة
-local selectrock = ""
+-- متغير عام لتحديد الصخرة الحالية
+local selectRock = ""
 getgenv().autoFarm = false
 
 -- دالة الضرب على الصخور
-local function punchRock(targetReps, rockName)
+local function punchRock(rockName)
+    getgenv().autoFarm = true
     local player = game.Players.LocalPlayer
     local muscleEvent = player:WaitForChild("muscleEvent")
 
     task.spawn(function()
-        while getgenv().autoFarm do
+        while getgenv().autoFarm and selectRock == rockName do
             local rock = workspace:FindFirstChild(rockName)
             if rock then
                 muscleEvent:FireServer("rep", rock)
@@ -707,56 +688,96 @@ local function punchRock(targetReps, rockName)
     end)
 end
 
--- Toggle لكل صخرة
-local jungleToggle = Tabs.Rocks:CreateToggle("JungleRock", {Title = "Auto Punch Jungle Rock (10M)", Default = false})
+-- Jungle Rock
+local jungleToggle = Tabs.Rocks:CreateToggle("JungleRock", {
+    Title = "Auto Punch Jungle Rock (10M)",
+    Default = false
+})
 jungleToggle:OnChanged(function(state)
-    selectrock = "Ancient Jungle Rock"
+    selectRock = "Ancient Jungle Rock"
     getgenv().autoFarm = state
-    if state then punchRock(10000000, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
 
-local kingToggle = Tabs.Rocks:CreateToggle("KingRock", {Title = "Auto Punch Muscle King Rock (5M)", Default = false})
+-- Muscle King Rock
+local kingToggle = Tabs.Rocks:CreateToggle("KingRock", {
+    Title = "Auto Punch Muscle King Rock (5M)",
+    Default = false
+})
 kingToggle:OnChanged(function(state)
-    selectrock = "Muscle King Gym Rock"
+    selectRock = "Muscle King Gym Rock"
     getgenv().autoFarm = state
-    if state then punchRock(5000000, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
 
-local legendToggle = Tabs.Rocks:CreateToggle("LegendRock", {Title = "Auto Punch Legend Rock (1M)", Default = false})
+-- Legend Rock
+local legendToggle = Tabs.Rocks:CreateToggle("LegendRock", {
+    Title = "Auto Punch Legend Rock (1M)",
+    Default = false
+})
 legendToggle:OnChanged(function(state)
-    selectrock = "Legend Gym Rock"
+    selectRock = "Legend Gym Rock"
     getgenv().autoFarm = state
-    if state then punchRock(1000000, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
 
-local infernoToggle = Tabs.Rocks:CreateToggle("InfernoRock", {Title = "Auto Punch Inferno Rock (750K)", Default = false})
+-- Inferno Rock
+local infernoToggle = Tabs.Rocks:CreateToggle("InfernoRock", {
+    Title = "Auto Punch Inferno Rock (750K)",
+    Default = false
+})
 infernoToggle:OnChanged(function(state)
-    selectrock = "Eternal Gym Rock"
+    selectRock = "Eternal Gym Rock"
     getgenv().autoFarm = state
-    if state then punchRock(750000, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
 
-local mythToggle = Tabs.Rocks:CreateToggle("MythRock", {Title = "Auto Punch Mythical Rock (400K)", Default = false})
+-- Mythical Rock
+local mythToggle = Tabs.Rocks:CreateToggle("MythRock", {
+    Title = "Auto Punch Mythical Rock (400K)",
+    Default = false
+})
 mythToggle:OnChanged(function(state)
-    selectrock = "Mythical Gym Rock"
+    selectRock = "Mythical Gym Rock"
     getgenv().autoFarm = state
-    if state then punchRock(400000, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
 
-local frostToggle = Tabs.Rocks:CreateToggle("FrostRock", {Title = "Auto Punch Frost Rock (150K)", Default = false})
+-- Frost Rock
+local frostToggle = Tabs.Rocks:CreateToggle("FrostRock", {
+    Title = "Auto Punch Frost Rock (150K)",
+    Default = false
+})
 frostToggle:OnChanged(function(state)
-    selectrock = "Frost Gym Rock"
+    selectRock = "Frost Gym Rock"
     getgenv().autoFarm = state
-    if state then punchRock(150000, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
 
-local tinyToggle = Tabs.Rocks:CreateToggle("TinyRock", {Title = "Auto Punch Tiny Rock (0)", Default = false})
+-- Tiny Rock
+local tinyToggle = Tabs.Rocks:CreateToggle("TinyRock", {
+    Title = "Auto Punch Tiny Rock (0)",
+    Default = false
+})
 tinyToggle:OnChanged(function(state)
-    selectrock = "Tiny Island Rock"
+    selectRock = "Tiny Island Rock"
     getgenv().autoFarm = state
-    if state then punchRock(0, selectrock) end
+    if state then
+        punchRock(selectRock)
+    end
 end)
-
 
 -- Auto Punch Toggle (No Animation)
 local Toggle = Tabs.Killing:CreateToggle("AutoPunchNoAnim", {Title = "Auto Punch (No Anim)", Default = false})
@@ -1294,6 +1315,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
