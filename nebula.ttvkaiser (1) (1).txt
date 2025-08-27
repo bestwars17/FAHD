@@ -365,7 +365,7 @@ end)
 local speedGrindToggle = Tabs.Rebirth:CreateToggle("SpeedGrind", {Title = "Fast Grind (No Rebirth)", Default = false})
 speedGrindToggle:OnChanged(function(State)
 	if State then
-		for i = 1, 10 do
+		for i = 1, 30 do
 			task.spawn(function()
 				while speedGrindToggle.Value do
 					game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
@@ -1280,6 +1280,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
