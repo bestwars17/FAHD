@@ -664,52 +664,85 @@ autoRebirthToggle:OnChanged(function(State)
 		end)
 	end
 end)
-
 Tabs.Rocks:AddSection("Auto Punch Rocks")
 
-local rockData = {
-    {Name = "TinyIslandRock", Title = "Tiny Rock", Durability = 0},
-    {Name = "PunchingIslandRock", Title = "Punching Rock", Durability = 10},
-    {Name = "LargeIslandRock", Title = "Large Rock", Durability = 100},
-    {Name = "GoldenBeachRock", Title = "Golden Rock", Durability = 5000},
-    {Name = "FrostGymRock", Title = "Frost Rock", Durability = 150000},
-    {Name = "MythicalGymRock", Title = "Mythical Rock", Durability = 400000},
-    {Name = "InfernoGymRock", Title = "Inferno Rock", Durability = 750000},
-    {Name = "LegendsGymRock", Title = "Legends Rock", Durability = 1000000},
-    {Name = "MuscleKingGymRock", Title = "Muscle King Rock", Durability = 5000000},
-    {Name = "AncientJungleRock", Title = "Ancient Jungle Rock", Durability = 10000000}
-}
+local selectrock = ""
 
-getgenv().autoRockFarm = getgenv().autoRockFarm or {}
-
-for _, rock in ipairs(rockData) do
-    Tabs.Rocks:CreateToggle(rock.Title, function(state)
-        getgenv().autoRockFarm[rock.Name] = state
-        task.spawn(function()
-            local player = game.Players.LocalPlayer
-            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-            local Workspace = game:GetService("Workspace")
-            while getgenv().autoRockFarm[rock.Name] and player.Character do
-                local rockObj = Workspace:FindFirstChild(rock.Name)
-                if rockObj and rockObj:FindFirstChild("Rock") and player:FindFirstChild("Durability") then
-                    if player.Durability.Value >= rock.Durability then
-                        if player.Character:FindFirstChild("RightHand") and player.Character:FindFirstChild("LeftHand") then
-                            -- ضرب الصخور
-                            firetouchinterest(rockObj.Rock, player.Character.RightHand, 0)
-                            firetouchinterest(rockObj.Rock, player.Character.LeftHand, 0)
-                            task.wait(0.01)
-                            firetouchinterest(rockObj.Rock, player.Character.RightHand, 1)
-                            firetouchinterest(rockObj.Rock, player.Character.LeftHand, 1)
-                            -- إرسال الحدث الصحيح
-                            ReplicatedStorage:WaitForChild("muscleEvent"):FireServer("rep", rockObj)
-                        end
-                    end
+local function punchRock(requiredDurability, rockName)
+    getgenv().autoFarm = true
+    while getgenv().autoFarm and selectrock == rockName do
+        task.wait()
+        local player = game.Players.LocalPlayer
+        if player.Durability.Value >= requiredDurability then
+            for _, v in pairs(game.Workspace.machinesFolder:GetDescendants()) do
+                if v.Name == "neededDurability" and v.Value == requiredDurability and player.Character:FindFirstChild("LeftHand") and player.Character:FindFirstChild("RightHand") then
+                    firetouchinterest(v.Parent.Rock, player.Character.RightHand, 0)
+                    firetouchinterest(v.Parent.Rock, player.Character.RightHand, 1)
+                    firetouchinterest(v.Parent.Rock, player.Character.LeftHand, 0)
+                    firetouchinterest(v.Parent.Rock, player.Character.LeftHand, 1)
+                    gettool()
                 end
-                task.wait(0.05)
             end
-        end)
-    end)
+        end
+    end
 end
+
+-- jungle Rock
+local jungleToggle = Tabs.Rocks:CreateToggle("JungleRock", {Title = "Auto Punch Jungle Rock (10M)", Default = false})
+jungleToggle:OnChanged(function()
+    selectrock = "Ancient Jungle Rock"
+    getgenv().autoFarm = Options.JungleRock.Value
+    if Options.JungleRock.Value then punchRock(10000000, selectrock) end
+end)
+
+-- muscle king Rock
+local kingToggle = Tabs.Rocks:CreateToggle("KingRock", {Title = "Auto Punch Muscle King Rock (5M)", Default = false})
+kingToggle:OnChanged(function()
+    selectrock = "Muscle King Gym Rock"
+    getgenv().autoFarm = Options.KingRock.Value
+    if Options.KingRock.Value then punchRock(5000000, selectrock) end
+end)
+
+-- Legend Rock
+local legendToggle = Tabs.Rocks:CreateToggle("LegendRock", {Title = "Auto Punch Legend Rock (1M)", Default = false})
+legendToggle:OnChanged(function()
+    selectrock = "Legend Gym Rock"
+    getgenv().autoFarm = Options.LegendRock.Value
+    if Options.LegendRock.Value then punchRock(1000000, selectrock) end
+end)
+
+-- Inferno Rock
+local infernoToggle = Tabs.Rocks:CreateToggle("InfernoRock", {Title = "Auto Punch Inferno Rock (750K)", Default = false})
+infernoToggle:OnChanged(function()
+    selectrock = "Eternal Gym Rock"
+    getgenv().autoFarm = Options.InfernoRock.Value
+    if Options.InfernoRock.Value then punchRock(750000, selectrock) end
+end)
+
+-- Mythical Rock
+local mythToggle = Tabs.Rocks:CreateToggle("MythRock", {Title = "Auto Punch Mythical Rock (400K)", Default = false})
+mythToggle:OnChanged(function()
+    selectrock = "Mythical Gym Rock"
+    getgenv().autoFarm = Options.MythRock.Value
+    if Options.MythRock.Value then punchRock(400000, selectrock) end
+end)
+
+-- Frost Rock
+local frostToggle = Tabs.Rocks:CreateToggle("FrostRock", {Title = "Auto Punch Frost Rock (150K)", Default = false})
+frostToggle:OnChanged(function()
+    selectrock = "Frost Gym Rock"
+    getgenv().autoFarm = Options.FrostRock.Value
+    if Options.FrostRock.Value then punchRock(150000, selectrock) end
+end)
+
+-- Tiny Rock
+local tinyToggle = Tabs.Rocks:CreateToggle("TinyRock", {Title = "Auto Punch Tiny Rock (0)", Default = false})
+tinyToggle:OnChanged(function()
+    selectrock = "Tiny Island Rock"
+    getgenv().autoFarm = Options.TinyRock.Value
+    if Options.TinyRock.Value then punchRock(0, selectrock) end
+end)
+
 -- Auto Punch Toggle (No Animation)
 local Toggle = Tabs.Killing:CreateToggle("AutoPunchNoAnim", {Title = "Auto Punch (No Anim)", Default = false})
 Toggle:OnChanged(function(state)
@@ -1246,6 +1279,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
