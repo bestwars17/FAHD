@@ -664,8 +664,10 @@ autoRebirthToggle:OnChanged(function(State)
 		end)
 	end
 end)
--- Fast Glitch Rocks
-local FastGlitchFolder = Tabs.Rocks:AddFolder("Fast Glitch")
+-- إضافة قسم جديد في تبويب Rocks
+Tabs.Rocks:AddSection("Auto Punch Rocks")
+
+-- تعريف جدول الصخور مع القيم المطلوبة
 local rockData = {
     {Name = "TinyIslandRock", Title = "Tiny Rock", Durability = 0},
     {Name = "PunchingIslandRock", Title = "Punching Rock", Durability = 10},
@@ -679,21 +681,24 @@ local rockData = {
     {Name = "AncientJungleRock", Title = "Ancient Jungle Rock", Durability = 10000000}
 }
 
+-- إنشاء أزرار لكل حجر
 for _, rock in ipairs(rockData) do
-    FastGlitchFolder:AddSwitch(rock.Title, function(state)
+    Tabs.Rocks:CreateToggle(rock.Title, function(state)
         getgenv().fastGlitch = getgenv().fastGlitch or {}
         getgenv().fastGlitch[rock.Name] = state
         task.spawn(function()
-            while getgenv().fastGlitch[rock.Name] and LocalPlayer.Character do
-                local durability = LocalPlayer:FindFirstChild("Durability")
-                if durability and durability.Value >= rock.Durability then
+            local player = game.Players.LocalPlayer
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local Workspace = game:GetService("Workspace")
+            while getgenv().fastGlitch[rock.Name] and player.Character do
+                if player:FindFirstChild("Durability") and player.Durability.Value >= rock.Durability then
                     local rockObj = Workspace:FindFirstChild(rock.Name)
-                    if rockObj and LocalPlayer.Character:FindFirstChild("RightHand") and LocalPlayer.Character:FindFirstChild("LeftHand") then
-                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.RightHand, 0)
-                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.LeftHand, 0)
+                    if rockObj and rockObj:FindFirstChild("Rock") then
+                        firetouchinterest(rockObj.Rock, player.Character.RightHand, 0)
+                        firetouchinterest(rockObj.Rock, player.Character.LeftHand, 0)
                         task.wait()
-                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.RightHand, 1)
-                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.LeftHand, 1)
+                        firetouchinterest(rockObj.Rock, player.Character.RightHand, 1)
+                        firetouchinterest(rockObj.Rock, player.Character.LeftHand, 1)
                         ReplicatedStorage.muscleEvent:FireServer("punch", "rightHand")
                         ReplicatedStorage.muscleEvent:FireServer("punch", "leftHand")
                     end
@@ -1240,6 +1245,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
