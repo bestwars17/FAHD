@@ -664,10 +664,10 @@ autoRebirthToggle:OnChanged(function(State)
 		end)
 	end
 end)
--- إضافة قسم جديد في تبويب Rocks
+
+-- قسم Auto Punch Rocks
 Tabs.Rocks:AddSection("Auto Punch Rocks")
 
--- تعريف جدول الصخور مع القيم المطلوبة
 local rockData = {
     {Name = "TinyIslandRock", Title = "Tiny Rock", Durability = 0},
     {Name = "PunchingIslandRock", Title = "Punching Rock", Durability = 10},
@@ -681,26 +681,30 @@ local rockData = {
     {Name = "AncientJungleRock", Title = "Ancient Jungle Rock", Durability = 10000000}
 }
 
--- إنشاء أزرار لكل حجر
+getgenv().autoRockFarm = getgenv().autoRockFarm or {}
+
 for _, rock in ipairs(rockData) do
     Tabs.Rocks:CreateToggle(rock.Title, function(state)
-        getgenv().fastGlitch = getgenv().fastGlitch or {}
-        getgenv().fastGlitch[rock.Name] = state
+        getgenv().autoRockFarm[rock.Name] = state
         task.spawn(function()
             local player = game.Players.LocalPlayer
             local ReplicatedStorage = game:GetService("ReplicatedStorage")
             local Workspace = game:GetService("Workspace")
-            while getgenv().fastGlitch[rock.Name] and player.Character do
+            while getgenv().autoRockFarm[rock.Name] and player.Character and player.Character:FindFirstChild("RightHand") and player.Character:FindFirstChild("LeftHand") do
                 if player:FindFirstChild("Durability") and player.Durability.Value >= rock.Durability then
                     local rockObj = Workspace:FindFirstChild(rock.Name)
                     if rockObj and rockObj:FindFirstChild("Rock") then
+                        -- اضرب الصخور مع التأكد من اليدين
                         firetouchinterest(rockObj.Rock, player.Character.RightHand, 0)
                         firetouchinterest(rockObj.Rock, player.Character.LeftHand, 0)
-                        task.wait()
+                        task.wait(0.01)
                         firetouchinterest(rockObj.Rock, player.Character.RightHand, 1)
                         firetouchinterest(rockObj.Rock, player.Character.LeftHand, 1)
-                        ReplicatedStorage.muscleEvent:FireServer("punch", "rightHand")
-                        ReplicatedStorage.muscleEvent:FireServer("punch", "leftHand")
+
+                        -- إرسال أحداث الضرب
+                        if ReplicatedStorage:FindFirstChild("muscleEvent") then
+                            ReplicatedStorage.muscleEvent:FireServer("rep") -- هذا آمن أكثر من "punch"
+                        end
                     end
                 end
                 task.wait(0.05)
@@ -708,7 +712,6 @@ for _, rock in ipairs(rockData) do
         end)
     end)
 end
-
 -- Auto Punch Toggle (No Animation)
 local Toggle = Tabs.Killing:CreateToggle("AutoPunchNoAnim", {Title = "Auto Punch (No Anim)", Default = false})
 Toggle:OnChanged(function(state)
@@ -1245,6 +1248,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
