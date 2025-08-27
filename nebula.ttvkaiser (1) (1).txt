@@ -259,6 +259,53 @@ autoWeightToggle:OnChanged(function(state)
     end
 end)
 
+-- Auto Eat Protein Egg كل 30 دقيقة
+local function activateProteinEgg()
+    local tool = Player.Character:FindFirstChild("Protein Egg") or Player.Backpack:FindFirstChild("Protein Egg")
+    if tool then
+        muscleEvent:FireServer("proteinEgg", tool)
+        Library:Notify({
+            Title = "Protein Egg",
+            Content = "تم أكل بروتين ايق ✔️",
+            Duration = 5
+        })
+    end
+end
+
+local running = false
+
+task.spawn(function()
+    while true do
+        if running then
+            activateProteinEgg()
+            task.wait(1800) -- كل 30 دقيقة
+        else
+            task.wait(1)
+        end
+    end
+end)
+
+-- سويتش تشغيل/إيقاف
+local switch = Tabs.Main:CreateToggle("AutoProteinEgg", {
+    Title = "Auto Eat Protein Egg (30m)",
+    Default = false
+})
+switch:OnChanged(function(state)
+    running = state
+    if state then
+        activateProteinEgg()
+    end
+end)
+
+-- زر تشغيل فوري
+Tabs.Main:CreateButton({
+    Title = "Eat Protein Egg Now",
+    Description = "يضغط بروتين ايق مرة وحدة الآن",
+    Callback = function()
+        activateProteinEgg()
+    end
+})
+
 local autoPushupToggle = Tabs.Main:CreateToggle("AutoPushups", {Title = "Auto Pushups", Default = false})
 autoPushupToggle:OnChanged(function(state)
     if state then
@@ -1223,6 +1270,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
