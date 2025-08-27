@@ -664,56 +664,45 @@ autoRebirthToggle:OnChanged(function(State)
 		end)
 	end
 end)
-Tabs.Rocks:AddSection("Auto Punch Rocks")
+-- Fast Glitch Rocks
+local FastGlitchFolder = Tabs.Rocks:AddFolder("Fast Glitch")
+local rockData = {
+    {Name = "TinyIslandRock", Title = "Tiny Rock", Durability = 0},
+    {Name = "PunchingIslandRock", Title = "Punching Rock", Durability = 10},
+    {Name = "LargeIslandRock", Title = "Large Rock", Durability = 100},
+    {Name = "GoldenBeachRock", Title = "Golden Rock", Durability = 5000},
+    {Name = "FrostGymRock", Title = "Frost Rock", Durability = 150000},
+    {Name = "MythicalGymRock", Title = "Mythical Rock", Durability = 400000},
+    {Name = "InfernoGymRock", Title = "Inferno Rock", Durability = 750000},
+    {Name = "LegendsGymRock", Title = "Legends Rock", Durability = 1000000},
+    {Name = "MuscleKingGymRock", Title = "Muscle King Rock", Durability = 5000000},
+    {Name = "AncientJungleRock", Title = "Ancient Jungle Rock", Durability = 10000000}
+}
 
-local getgenv().autoFarm = false
-local selectRock = ""
-
-local function punchRock(rockName)
-    local player = game.Players.LocalPlayer
-    local muscleEvent = player:WaitForChild("muscleEvent")
-
-    task.spawn(function()
-        while getgenv().autoFarm and selectRock == rockName do
-            local rock = nil
-            -- البحث في مجلد الصخور
-            for _, obj in pairs(workspace:GetDescendants()) do
-                if obj.Name == rockName then
-                    rock = obj
-                    break
+for _, rock in ipairs(rockData) do
+    FastGlitchFolder:AddSwitch(rock.Title, function(state)
+        getgenv().fastGlitch = getgenv().fastGlitch or {}
+        getgenv().fastGlitch[rock.Name] = state
+        task.spawn(function()
+            while getgenv().fastGlitch[rock.Name] and LocalPlayer.Character do
+                local durability = LocalPlayer:FindFirstChild("Durability")
+                if durability and durability.Value >= rock.Durability then
+                    local rockObj = Workspace:FindFirstChild(rock.Name)
+                    if rockObj and LocalPlayer.Character:FindFirstChild("RightHand") and LocalPlayer.Character:FindFirstChild("LeftHand") then
+                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.RightHand, 0)
+                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.LeftHand, 0)
+                        task.wait()
+                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.RightHand, 1)
+                        firetouchinterest(rockObj.Rock, LocalPlayer.Character.LeftHand, 1)
+                        ReplicatedStorage.muscleEvent:FireServer("punch", "rightHand")
+                        ReplicatedStorage.muscleEvent:FireServer("punch", "leftHand")
+                    end
                 end
+                task.wait(0.05)
             end
-
-            if rock and player.Character:FindFirstChild("RightHand") and player.Character:FindFirstChild("LeftHand") then
-                -- تفعيل الحدث
-                muscleEvent:FireServer("rep", rock)
-            end
-            task.wait(0.005)
-        end
+        end)
     end)
 end
-
--- دالة لإنشاء Toggle لصخرة معينة
-local function createRockToggle(toggleName, title, rockName)
-    local toggle = Tabs.Rocks:CreateToggle(toggleName, {Title = title, Default = false})
-    toggle:OnChanged(function(state)
-        selectRock = rockName
-        getgenv().autoFarm = state
-        if state then
-            punchRock(rockName)
-        end
-    end)
-end
-
--- إنشاء جميع Toggles
-createRockToggle("JungleRock", "Auto Punch Jungle Rock (10M)", "Ancient Jungle Rock")
-createRockToggle("KingRock", "Auto Punch Muscle King Rock (5M)", "Muscle King Gym Rock")
-createRockToggle("LegendRock", "Auto Punch Legend Rock (1M)", "Legend Gym Rock")
-createRockToggle("InfernoRock", "Auto Punch Inferno Rock (750K)", "Eternal Gym Rock")
-createRockToggle("MythRock", "Auto Punch Mythical Rock (400K)", "Mythical Gym Rock")
-createRockToggle("FrostRock", "Auto Punch Frost Rock (150K)", "Frost Gym Rock")
-createRockToggle("TinyRock", "Auto Punch Tiny Rock (0)", "Tiny Island Rock")
-
 
 -- Auto Punch Toggle (No Animation)
 local Toggle = Tabs.Killing:CreateToggle("AutoPunchNoAnim", {Title = "Auto Punch (No Anim)", Default = false})
@@ -1251,6 +1240,7 @@ Library:Notify{
 -- which has been marked to be one that auto loads!
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
